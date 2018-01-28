@@ -13,7 +13,11 @@
 uint64_t pms_current_time_millis() {
     struct timeval tv;
     gettimeofday(&tv,NULL);
-    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
+    uint64_t sec = tv.tv_sec;
+    uint64_t usec = tv.tv_usec;
+
+    return sec * 1000 + usec / 1000;
 }
 
 void pms_current_local_time_str(char* timestr, size_t size)
