@@ -5,5 +5,5 @@
 
 void main(){
 
-    printf("%d", pms_current_time_millis());
+    printf("%ld", pms_current_time_millis());
 }
