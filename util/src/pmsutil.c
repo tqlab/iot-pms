@@ -10,7 +10,7 @@
 
 
 
-u_int64_t pms_current_time_millis() {
+uint64_t pms_current_time_millis() {
     struct timeval tv;
     gettimeofday(&tv,NULL);
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
