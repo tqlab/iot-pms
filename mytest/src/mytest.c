@@ -27,4 +27,7 @@ void main(){
 
     printf("%"PRIu64"\n", pms_current_time_millis());
 
+    uint64_t tt = pms_current_time_millis();
+    printf("%"PRIu64"\n", tt);
+
 }
