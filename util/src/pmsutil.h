@@ -6,6 +6,7 @@
 #define PMS_PMSUTIL_H
 
 #include <stdio.h>
+#include <stdint.h>
 
 long pms_current_time_millis();
 
