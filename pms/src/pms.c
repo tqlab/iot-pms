@@ -154,15 +154,18 @@ void Pms7003Parse(pms7003_meas_t *meas) {
     meas->version = state.buf[24];
     meas->errorCode = state.buf[25];
 
-    long timestamp = pms_current_time_millis();
 
-    printf("pm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\n",
+    char current_time_str[40];
+    pms_current_local_time_str(current_time_str, 40);
+
+    printf("%s\tpm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\n",
+           current_time_str,
            meas->concPM1_0_CF1,
            meas->concPM2_5_CF1, meas->concPM10_0_CF1);
     fflush(stdout);
 
-    fprintf(fp, "%ld\t%d\t%d\t%d\n",
-            timestamp,
+    fprintf(fp, "%s,%d,%d,%d\n",
+            current_time_str,
             meas->concPM1_0_CF1,
             meas->concPM2_5_CF1, meas->concPM10_0_CF1);
     fflush(fp);
