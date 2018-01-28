@@ -1,0 +1,1 @@
+Example：./pms 7003 /dev/ttyUSB0 or ./pms 5003 /dev/ttyUSB1

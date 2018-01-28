@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.2)
+project(pms)
+
+SET(CMAKE_C_STANDARD 99)
+
+ADD_SUBDIRECTORY(pms)
+ADD_SUBDIRECTORY(util)
