@@ -7,4 +7,7 @@
 void main(){
 
     printf("%" PRIu64 "\n", pms_current_time_millis());
+    printf("%" PRId64 "\n", pms_current_time_millis());
+
+    printf("%lld\n", pms_current_time_millis());
 }
