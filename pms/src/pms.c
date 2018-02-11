@@ -4,12 +4,14 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <curl/curl.h>
 #include "pms.h"
 #include "pmsutil.h"
 
@@ -17,6 +19,87 @@ static TState state;
 static pms5003_meas_t pms5003_meas;
 static pms7003_meas_t pms7003_meas;
 static FILE *fp = NULL;
+
+void curl_post_data(char* label, char* url, uint16_t pm25, uint16_t pm10, uint16_t hcho, uint16_t temperature, uint16_t humidity)
+{
+    CURL *curl;
+    CURLcode res;
+
+    struct curl_httppost *post=NULL;
+    struct curl_httppost *last=NULL;
+    struct curl_slist *headerlist=NULL;
+    static const char buf[] = "Expect:";
+
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "label",
+                 CURLFORM_COPYCONTENTS, label, CURLFORM_END);
+
+    char pm25_str[10];
+    sprintf(pm25_str, "%d", pm25);
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "pm25",
+                 CURLFORM_COPYCONTENTS, pm25_str, CURLFORM_END);
+
+    char pm10_str[10];
+    sprintf(pm10_str, "%d", pm10);
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "pm10",
+                 CURLFORM_COPYCONTENTS, pm10_str, CURLFORM_END);
+
+    char hcho_str[10];
+    sprintf(hcho_str, "%d", hcho);
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "hcho",
+                 CURLFORM_COPYCONTENTS, hcho_str, CURLFORM_END);
+
+    char temperature_str[10];
+    sprintf(temperature_str, "%d", temperature);
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "temperature",
+                 CURLFORM_COPYCONTENTS, temperature_str, CURLFORM_END);
+
+    char humidity_str[10];
+    sprintf(humidity_str, "%d", humidity);
+    curl_formadd(&post,
+                 &last,
+                 CURLFORM_COPYNAME, "humidity",
+                 CURLFORM_COPYCONTENTS, humidity_str, CURLFORM_END);
+
+
+    curl = curl_easy_init();
+    /* initalize custom header list (stating that Expect: 100-continue is not
+       wanted */
+    headerlist = curl_slist_append(headerlist, buf);
+    if(curl) {
+        /* what URL that receives this POST */
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+
+        /* Perform the request, res will get the return code */
+        res = curl_easy_perform(curl);
+        /* Check for errors */
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
+
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+
+        /* then cleanup the formpost chain */
+        curl_formfree(post);
+        /* free slist */
+        curl_slist_free_all (headerlist);
+    }
+}
 
 /**
     Initializes the measurement data state machine.
@@ -102,7 +185,7 @@ bool PmsProcess(uint8_t b) {
     Parses a complete measurement data frame into a structure.
     @param[out] meas the parsed measurement data
  */
-void Pms5003Parse(pms5003_meas_t *meas) {
+void Pms5003Parse(pms5003_meas_t *meas, char* label, char* url) {
     meas->concPM1_0_CF1 = read_uint16(state.buf, 0);
     meas->concPM2_5_CF1 = read_uint16(state.buf, 2);
     meas->concPM10_0_CF1 = read_uint16(state.buf, 4);
@@ -135,6 +218,7 @@ void Pms5003Parse(pms5003_meas_t *meas) {
     fprintf(fp, "%s,%d,%d,%d,%d,%d\n",
             current_time_str,
             meas->concPM2_5_amb, meas->concPM10_0_amb, meas->hcho, meas->temperature, meas->humidity);
+    curl_post_data(label, url, meas->concPM2_5_amb, meas->concPM10_0_amb, meas->hcho, meas->temperature, meas->humidity);
     fflush(fp);
 }
 
@@ -236,14 +320,17 @@ int set_interface_attribs(int fd, int speed) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("Usage: pms %s %s\n", "5003", "/dev/ttyUSB0");
+    if (argc < 5) {
+        printf("Usage: pms %s %s\n", "5003", "/dev/ttyUSB0", "bedroom" "http://xxx.xxx.xxx/pms/post.json");
         return 0;
     }
 
 
     char *type = argv[1];
     char *portname = argv[2];
+
+    char *label = argv[3];
+    char *url = argv[4];
 
     char fileName[64] = {0};
     strcat (fileName, "pms");
@@ -275,12 +362,15 @@ int main(int argc, char *argv[]) {
     while ((rdlen = read(fd, frameBuf, 1)) > 0) {
         if (PmsProcess(frameBuf[0])) {
             if (strcmp(type, "5003") == 0) {
-                Pms5003Parse(&pms5003_meas);
+                Pms5003Parse(&pms5003_meas, label, url);
+                sleep(60);
             } else {
                 Pms7003Parse(&pms7003_meas);
             }
 
         }
+
+
     }
 
 }
