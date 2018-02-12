@@ -321,7 +321,7 @@ int set_interface_attribs(int fd, int speed) {
 
 int main(int argc, char *argv[]) {
     if (argc < 5) {
-        printf("Usage: pms %s %s\n", "5003", "/dev/ttyUSB0", "bedroom" "http://xxx.xxx.xxx/pms/post.json");
+        printf("Usage: pms %s %s %s %s\n", "5003", "/dev/ttyUSB0", "bedroom" "http://xxx.xxx.xxx/pms/post.json");
         return 0;
     }
 
