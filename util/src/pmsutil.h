@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-long pms_current_time_millis();
+uint64_t pms_current_time_millis();
 
 void pms_current_local_time_str(char* timestr, size_t size);
 
