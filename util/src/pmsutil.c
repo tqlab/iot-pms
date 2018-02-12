@@ -10,12 +10,16 @@
 
 
 
-uint64_t pms_current_time_millis() {
+uint64_t pms_current_time_millis(uint64_t* ret) {
     struct timeval tv;
     gettimeofday(&tv,NULL);
 
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
+
+    if (ret) {
+        *ret = sec * 1000 + usec / 1000;
+    }
 
     return sec * 1000 + usec / 1000;
 }

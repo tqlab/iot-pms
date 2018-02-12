@@ -94,8 +94,10 @@ void test_long_int()
 
     printf("%lld\n", timestamp);
 
-    printf("%"PRIu64"\n", pms_current_time_millis());
+    printf("%"PRIu64"\n", pms_current_time_millis(&timestamp));
 
-    uint64_t tt = pms_current_time_millis();
+    printf("lalal: %"PRIu64"\n", timestamp);
+
+    uint64_t tt = pms_current_time_millis(&timestamp);
     printf("%"PRIu64"\n", tt);
 }
