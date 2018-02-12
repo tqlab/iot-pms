@@ -9,10 +9,11 @@
 #include "pmsutil.h"
 
 void test_curl();
+void test_long_int();
 
 int main(int argc, char *argv[])
 {
-    test_curl();
+    test_long_int();
 }
 
 void test_curl()
