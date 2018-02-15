@@ -13,6 +13,7 @@ void test_long_int();
 
 int main(int argc, char *argv[])
 {
+    test_curl();
     test_long_int();
 }
 

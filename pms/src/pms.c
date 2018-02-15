@@ -18,7 +18,6 @@
 static TState state;
 static pms5003_meas_t pms5003_meas;
 static pms7003_meas_t pms7003_meas;
-static FILE *fp = NULL;
 
 void curl_post_data(char* label, char* url, uint16_t pm25, uint16_t pm10, uint16_t hcho, uint16_t temperature, uint16_t humidity)
 {
@@ -104,7 +103,7 @@ void curl_post_data(char* label, char* url, uint16_t pm25, uint16_t pm10, uint16
 /**
     Initializes the measurement data state machine.
  */
-void PmsInit(void) {
+void pms_init(void) {
     state.state = BEGIN1;
     state.size = sizeof(state.buf);
     state.idx = state.len = 0;
@@ -116,7 +115,7 @@ void PmsInit(void) {
     @param[in] b the byte
     @return true if a full message was received
  */
-bool PmsProcess(uint8_t b) {
+bool pms_process(uint8_t b) {
     switch (state.state) {
         // wait for BEGIN1 byte
         case BEGIN1:
@@ -133,7 +132,7 @@ bool PmsProcess(uint8_t b) {
             } else {
                 state.state = BEGIN1;
                 // retry
-                return PmsProcess(b);
+                return pms_process(b);
             }
             break;
             // verify data length
@@ -185,7 +184,7 @@ bool PmsProcess(uint8_t b) {
     Parses a complete measurement data frame into a structure.
     @param[out] meas the parsed measurement data
  */
-void Pms5003Parse(pms5003_meas_t *meas, char* label, char* url) {
+void pms5003_parse(pms5003_meas_t *meas) {
     meas->concPM1_0_CF1 = read_uint16(state.buf, 0);
     meas->concPM2_5_CF1 = read_uint16(state.buf, 2);
     meas->concPM10_0_CF1 = read_uint16(state.buf, 4);
@@ -204,25 +203,9 @@ void Pms5003Parse(pms5003_meas_t *meas, char* label, char* url) {
     meas->reserve = read_uint16(state.buf, 30);
     meas->version = state.buf[32];
     meas->errorCode = state.buf[33];
-
-    char current_time_str[40];
-
-    pms_current_local_time_str(current_time_str, 40);
-
-    printf("%s\tpm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\thcho= %d mg/m³\ttemperature = %d℃\thumidity = %d％\n",
-           current_time_str,
-           meas->concPM1_0_CF1,
-           meas->concPM2_5_CF1, meas->concPM10_0_CF1, meas->hcho, meas->temperature, meas->humidity);
-    fflush(stdout);
-
-    fprintf(fp, "%s,%d,%d,%d,%d,%d\n",
-            current_time_str,
-            meas->concPM2_5_amb, meas->concPM10_0_amb, meas->hcho, meas->temperature, meas->humidity);
-    curl_post_data(label, url, meas->concPM2_5_amb, meas->concPM10_0_amb, meas->hcho, meas->temperature, meas->humidity);
-    fflush(fp);
 }
 
-void Pms7003Parse(pms7003_meas_t *meas) {
+void pms7003_parse(pms7003_meas_t *meas) {
     meas->concPM1_0_CF1 = read_uint16(state.buf, 0);
     meas->concPM2_5_CF1 = read_uint16(state.buf, 2);
     meas->concPM10_0_CF1 = read_uint16(state.buf, 4);
@@ -237,22 +220,6 @@ void Pms7003Parse(pms7003_meas_t *meas) {
     meas->rawGt10_0um = read_uint16(state.buf, 22);
     meas->version = state.buf[24];
     meas->errorCode = state.buf[25];
-
-
-    char current_time_str[40];
-    pms_current_local_time_str(current_time_str, 40);
-
-    printf("%s\tpm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\n",
-           current_time_str,
-           meas->concPM1_0_CF1,
-           meas->concPM2_5_CF1, meas->concPM10_0_CF1);
-    fflush(stdout);
-
-    fprintf(fp, "%s,%d,%d,%d\n",
-            current_time_str,
-            meas->concPM1_0_CF1,
-            meas->concPM2_5_CF1, meas->concPM10_0_CF1);
-    fflush(fp);
 }
 
 
@@ -321,51 +288,104 @@ int set_interface_attribs(int fd, int speed) {
 
 int main(int argc, char *argv[]) {
     if (argc < 5) {
-        printf("Usage: pms %s %s %s %s\n", "5003", "/dev/ttyUSB0", "bedroom" "http://xxx.xxx.xxx/pms/post.json");
+        printf("Usage: pms %s %s %s %s\n", "5003", "/dev/ttyUSB0", "bedroom", "http://xxx.xxx.xxx/pms/post.json");
         return 0;
     }
 
 
     char *type = argv[1];
-    char *portname = argv[2];
+    char *dev_file_path = argv[2];
 
     char *label = argv[3];
     char *url = argv[4];
 
-    char fileName[64] = {0};
-    strcat (fileName, "pms");
-    strcat (fileName, type);
-    strcat (fileName, ".log");
+    char log_file_name[64] = {0};
+    strcat (log_file_name, "pms");
+    strcat (log_file_name, type);
+    strcat (log_file_name, ".log");
 
-    fp = fopen(fileName, "w+");
+    FILE *log_fp = fopen(log_file_name, "w+");
 
-    int fd;
+    int dev_fd;
     int wlen;
 
-    fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
-    if (fd < 0) {
-        printf("Error opening %s: %s\n", portname, strerror(errno));
+    dev_fd = open(dev_file_path, O_RDWR | O_NOCTTY | O_SYNC);
+    if (dev_fd < 0) {
+        printf("Error opening %s: %s\n", dev_file_path, strerror(errno));
         return -1;
     }
-    set_interface_attribs(fd, B9600);
+    set_interface_attribs(dev_fd, B9600);
 
     /* simple output */
-    wlen = write(fd, "Hello!\n", 7);
+    wlen = write(dev_fd, "Hello!\n", 7);
     if (wlen != 7) {
         printf("Error from write: %d, %d\n", wlen, errno);
     }
-    tcdrain(fd);    /* delay for output */
+    tcdrain(dev_fd);    /* delay for output */
+
+
+    pms_init();
 
     uint8_t frameBuf[64];
     int rdlen = 0;
-    PmsInit();
-    while ((rdlen = read(fd, frameBuf, 1)) > 0) {
-        if (PmsProcess(frameBuf[0])) {
+
+    // last post data to server timestamp
+    uint64_t last_post_timestamp = 0;
+
+    while ((rdlen = read(dev_fd, frameBuf, 1)) > 0) {
+        if (pms_process(frameBuf[0])) {
+
+            // human readable time str
+            char current_time_str[40];
+
+            // get the time str
+            pms_current_local_time_str(current_time_str, 40);
+
+            // current time millis
+            uint64_t current_timestamp = pms_current_time_millis();
+
             if (strcmp(type, "5003") == 0) {
-                Pms5003Parse(&pms5003_meas, label, url);
-                sleep(60);
+                pms5003_parse(&pms5003_meas);
+
+                // output to console
+                printf("%s\tpm1= %dug/m^3\tpm25= %dug/m^3\tpm10= %dug/m^3\thcho= %d mg/m^3\ttemperature = %dC\thumidity = %d％\n",
+                       current_time_str,
+                       pms5003_meas.concPM1_0_CF1,
+                       pms5003_meas.concPM2_5_CF1, pms5003_meas.concPM10_0_CF1,
+                       pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
+                fflush(stdout);
+
+                // output to log file
+                fprintf(log_fp, "%s,%d,%d,%d,%d,%d\n",
+                        current_time_str,
+                        pms5003_meas.concPM2_5_amb, pms5003_meas.concPM10_0_amb,
+                        pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
+
+                fflush(log_fp);
+
+                if (current_timestamp - last_post_timestamp > 60 * 1000) {
+
+                    // post data to server every minute
+                    curl_post_data(label, url, pms5003_meas.concPM2_5_amb, pms5003_meas.concPM10_0_amb,
+                                   pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
+
+                    last_post_timestamp = current_timestamp;
+                }
+
             } else {
-                Pms7003Parse(&pms7003_meas);
+                pms7003_parse(&pms7003_meas);
+
+                printf("%s\tpm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\n",
+                       current_time_str,
+                       pms7003_meas.concPM1_0_CF1,
+                       pms7003_meas.concPM2_5_CF1, pms7003_meas.concPM10_0_CF1);
+                fflush(stdout);
+
+                fprintf(log_fp, "%s,%d,%d,%d\n",
+                        current_time_str,
+                        pms7003_meas.concPM1_0_CF1,
+                        pms7003_meas.concPM2_5_CF1, pms7003_meas.concPM10_0_CF1);
+                fflush(log_fp);
             }
 
         }
