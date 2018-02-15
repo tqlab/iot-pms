@@ -13,7 +13,7 @@ void test_long_int();
 
 int main(int argc, char *argv[])
 {
-    test_curl();
+    //test_curl();
     test_long_int();
 }
 
@@ -85,20 +85,20 @@ void test_long_int()
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
 
-    printf("%"PRIu64"\n", sec);
-    printf("%"PRIu64"\n", usec);
+    printf("1. %"PRIu64"\n", sec);
+    printf("2. %"PRIu64"\n", usec);
 
     uint64_t timestamp = sec * 1000 + usec / 1000;
 
-    printf("%"PRIu64"\n", timestamp);
-    printf("%"PRId64"\n", timestamp);
+    printf("3. %"PRIu64"\n", timestamp);
+    printf("4. %"PRId64"\n", timestamp);
 
-    printf("%lld\n", timestamp);
+    printf("5. %lld\n", timestamp);
 
-    printf("%"PRIu64"\n", pms_current_time_millis(&timestamp));
+    printf("6. %"PRIu64"\n", pms_current_time_millis(&timestamp));
 
-    printf("lalal: %"PRIu64"\n", timestamp);
+    printf("7. %"PRIu64"\n", timestamp);
 
     uint64_t tt = pms_current_time_millis(&timestamp);
-    printf("%"PRIu64"\n", tt);
+    printf("8. %"PRIu64"\n", tt);
 }

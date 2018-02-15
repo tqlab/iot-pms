@@ -7,36 +7,36 @@
 
 // parsed measurement data
 typedef struct {
-    uint16_t concPM1_0_CF1;
-    uint16_t concPM2_5_CF1;
-    uint16_t concPM10_0_CF1;
-    uint16_t concPM1_0_amb;
-    uint16_t concPM2_5_amb;
-    uint16_t concPM10_0_amb;
-    uint16_t rawGt0_3um;
-    uint16_t rawGt0_5um;
-    uint16_t rawGt1_0um;
-    uint16_t rawGt2_5um;
-    uint16_t rawGt5_0um;
-    uint16_t rawGt10_0um;
+    uint16_t conc_pm1_0_cf1;
+    uint16_t conc_pm2_5_cf1;
+    uint16_t conc_pm10_0_cf1;
+    uint16_t conc_pm1_0_amb;
+    uint16_t conc_pm2_5_amb;
+    uint16_t conc_pm10_0_amb;
+    uint16_t raw_gt0_3um;
+    uint16_t raw_gt0_5um;
+    uint16_t raw_gt1_0um;
+    uint16_t raw_gt2_5um;
+    uint16_t raw_gt5_0um;
+    uint16_t raw_gt10_0um;
     uint8_t version;
     uint8_t errorCode;
 } pms7003_meas_t;
 
 // parsed measurement data
 typedef struct {
-    uint16_t concPM1_0_CF1;
-    uint16_t concPM2_5_CF1;
-    uint16_t concPM10_0_CF1;
-    uint16_t concPM1_0_amb;
-    uint16_t concPM2_5_amb;
-    uint16_t concPM10_0_amb;
-    uint16_t rawGt0_3um;
-    uint16_t rawGt0_5um;
-    uint16_t rawGt1_0um;
-    uint16_t rawGt2_5um;
-    uint16_t rawGt5_0um;
-    uint16_t rawGt10_0um;
+    uint16_t conc_pm1_0_cf1;
+    uint16_t conc_pm2_5_cf1;
+    uint16_t conc_pm10_0_cf1;
+    uint16_t conc_pm1_0_amb;
+    uint16_t conc_pm2_5_amb;
+    uint16_t conc_pm10_0_amb;
+    uint16_t raw_gt0_3um;
+    uint16_t raw_gt0_5um;
+    uint16_t raw_gt1_0um;
+    uint16_t raw_gt2_5um;
+    uint16_t raw_gt5_0um;
+    uint16_t raw_gt10_0um;
 
     uint16_t hcho;
     uint16_t temperature;
@@ -67,15 +67,15 @@ typedef enum {
     DATA,
     CHECK1,
     CHECK2
-} EState;
+} PMS_PARSE_STATE;
 
 typedef struct {
-    EState state;
+    PMS_PARSE_STATE state;
     uint8_t buf[40];
     int size;
     int idx, len;
     uint16_t chk, sum;
-} TState;
+} PMS_PARSE_CTX;
 
 
 #endif //PMS_PMS_H
