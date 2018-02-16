@@ -354,21 +354,7 @@ int main(int argc, char *argv[]) {
 
                 pms5003_parse(&pms_parse_ctx, &pms5003_meas);
 
-                // output to console
-                printf("%s\tpm1= %dug/m^3\tpm25= %dug/m^3\tpm10= %dug/m^3\thcho= %d mg/m^3\ttemperature = %dC\thumidity = %d％\n",
-                       current_time_str,
-                       pms5003_meas.conc_pm1_0_cf1,
-                       pms5003_meas.conc_pm2_5_cf1, pms5003_meas.conc_pm10_0_cf1,
-                       pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
-                fflush(stdout);
-
-                // output to log file
-                fprintf(log_fp, "%s,%d,%d,%d,%d,%d\n",
-                        current_time_str,
-                        pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
-                        pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
-
-                fflush(log_fp);
+                char *post_flag = "-";
 
                 if (current_timestamp - last_post_timestamp > 60 * 1000) {
 
@@ -377,7 +363,26 @@ int main(int argc, char *argv[]) {
                                    pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
 
                     last_post_timestamp = current_timestamp;
+
+                    post_flag = "*";
                 }
+
+
+                // output to console
+                printf("%s\tpm1= %dug/m^3\tpm25= %dug/m^3\tpm10= %dug/m^3\thcho= %d mg/m^3\ttemperature = %dC\thumidity = %d％ %s\n",
+                       current_time_str,
+                       pms5003_meas.conc_pm1_0_cf1,
+                       pms5003_meas.conc_pm2_5_cf1, pms5003_meas.conc_pm10_0_cf1,
+                       pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
+                fflush(stdout);
+
+                // output to log file
+                fprintf(log_fp, "%s,%d,%d,%d,%d,%d,%s\n",
+                        current_time_str,
+                        pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
+                        pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
+
+                fflush(log_fp);
 
             } else {
 
