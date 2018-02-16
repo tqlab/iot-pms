@@ -15,6 +15,11 @@
 #include "pms.h"
 #include "pmsutil.h"
 
+size_t curl_write_data_null(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+    return size * nmemb;
+}
+
 void curl_post_data(char *label, char *url, uint16_t pm25, uint16_t pm10, uint16_t hcho, uint16_t temperature,
                     uint16_t humidity) {
     CURL *curl;
@@ -78,6 +83,8 @@ void curl_post_data(char *label, char *url, uint16_t pm25, uint16_t pm10, uint16
         curl_easy_setopt(curl, CURLOPT_URL, url);
 
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_null);
 
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);

@@ -13,8 +13,13 @@ void test_long_int();
 
 int main(int argc, char *argv[])
 {
-    //test_curl();
-    test_long_int();
+    test_curl();
+    //test_long_int();
+}
+
+size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+    return size * nmemb;
 }
 
 void test_curl()
@@ -59,6 +64,8 @@ void test_curl()
         curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8080/pms/post.json");
 
         curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
