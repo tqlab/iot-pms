@@ -337,7 +337,12 @@ int main(int argc, char *argv[]) {
     uint64_t last_post_timestamp = 0;
 
     while ((rdlen = read(dev_fd, frameBuf, 1)) > 0) {
+
+        LOG("0.3");
+
         if (pms_process(&pms_parse_ctx, frameBuf[0])) {
+
+            LOG("0.4");
 
             // human readable time str
             char current_time_str[40];
