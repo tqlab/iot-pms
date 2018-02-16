@@ -199,6 +199,8 @@ void pms5003_parse(PMS_PARSE_CTX *state, pms5003_meas_t *meas) {
     meas->reserve = read_uint16(state->buf, 30);
     meas->version = state->buf[32];
     meas->errorCode = state->buf[33];
+
+    LOG("2");
 }
 
 void pms7003_parse(PMS_PARSE_CTX *state, pms7003_meas_t *meas) {
@@ -346,6 +348,8 @@ int main(int argc, char *argv[]) {
             if (strcmp(type, "5003") == 0) {
 
                 pms5003_meas_t pms5003_meas;
+
+                LOG("1");
 
                 pms5003_parse(&pms_parse_ctx, &pms5003_meas);
 
