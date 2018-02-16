@@ -350,10 +350,14 @@ int main(int argc, char *argv[]) {
             // get the time str
             pms_current_local_time_str(current_time_str, 40);
 
+            LOG("0.5");
+
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
             if (strcmp(type, "5003") == 0) {
+
+                LOG("0.6");
 
                 pms5003_meas_t pms5003_meas;
 
