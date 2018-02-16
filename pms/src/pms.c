@@ -324,8 +324,11 @@ int main(int argc, char *argv[]) {
 
     PMS_PARSE_CTX pms_parse_ctx;
 
+    LOG("0.1");
 
     pms_init(&pms_parse_ctx);
+
+    LOG("0.2");
 
     uint8_t frameBuf[64];
     int rdlen = 0;
