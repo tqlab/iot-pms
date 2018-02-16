@@ -14,9 +14,11 @@ void pms_current_local_time_str(char* timestr, size_t size);
 
 uint16_t read_uint16(uint8_t *buf, int idx);
 
+/*
 #define LOG(format, arguments...) \
     printf(format, ##arguments);    \
     printf("\n");
+*/
 
 
 #endif //PMS_PMSUTIL_H

@@ -199,8 +199,6 @@ void pms5003_parse(PMS_PARSE_CTX *state, pms5003_meas_t *meas) {
     meas->reserve = read_uint16(state->buf, 30);
     meas->version = state->buf[32];
     meas->errorCode = state->buf[33];
-
-    LOG("2");
 }
 
 void pms7003_parse(PMS_PARSE_CTX *state, pms7003_meas_t *meas) {
@@ -304,10 +302,7 @@ int main(int argc, char *argv[]) {
 
     FILE *log_fp = fopen(log_file_name, "w+");
 
-    int dev_fd;
-    int wlen;
-
-    dev_fd = open(dev_file_path, O_RDWR | O_NOCTTY | O_SYNC);
+    int dev_fd = open(dev_file_path, O_RDWR | O_NOCTTY | O_SYNC);
     if (dev_fd < 0) {
         printf("Error opening %s: %s\n", dev_file_path, strerror(errno));
         return -1;
@@ -315,34 +310,27 @@ int main(int argc, char *argv[]) {
     set_interface_attribs(dev_fd, B9600);
 
     /* simple output */
-    wlen = write(dev_fd, "Hello!\n", 7);
+    /*
+    ssize_t wlen = write(dev_fd, "Hello!\n", 7);
     if (wlen != 7) {
         printf("Error from write: %d, %d\n", wlen, errno);
     }
+    */
+
     tcdrain(dev_fd);    /* delay for output */
 
-
     PMS_PARSE_CTX pms_parse_ctx;
-
-    LOG("0.1");
-
     pms_init(&pms_parse_ctx);
 
-    LOG("0.2");
-
     uint8_t frameBuf[64];
-    int rdlen = 0;
+    ssize_t rdlen = 0;
 
     // last post data to server timestamp
     uint64_t last_post_timestamp = 0;
 
     while ((rdlen = read(dev_fd, frameBuf, 1)) > 0) {
 
-        LOG("0.3");
-
         if (pms_process(&pms_parse_ctx, frameBuf[0])) {
-
-            LOG("0.4");
 
             // human readable time str
             char current_time_str[40];
@@ -350,20 +338,12 @@ int main(int argc, char *argv[]) {
             // get the time str
             pms_current_local_time_str(current_time_str, 40);
 
-            LOG("0.5");
-
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
-            LOG("0.55");
-
             if (strcmp(type, "5003") == 0) {
 
-                LOG("0.6");
-
                 pms5003_meas_t pms5003_meas;
-
-                LOG("1");
 
                 pms5003_parse(&pms_parse_ctx, &pms5003_meas);
 
@@ -412,7 +392,6 @@ int main(int argc, char *argv[]) {
             }
 
         }
-
 
     }
 
