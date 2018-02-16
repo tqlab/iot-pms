@@ -355,6 +355,8 @@ int main(int argc, char *argv[]) {
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
+            LOG("0.55");
+
             if (strcmp(type, "5003") == 0) {
 
                 LOG("0.6");
