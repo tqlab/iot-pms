@@ -119,66 +119,66 @@ void pms_init(PMS_PARSE_CTX *state) {
     @param[in] b the byte
     @return true if a full message was received
  */
-bool pms_process(PMS_PARSE_CTX *state, uint8_t b) {
-    switch (state->state) {
+bool pms_process(PMS_PARSE_CTX *pms_parse_ctx, uint8_t b) {
+    switch (pms_parse_ctx->state) {
         // wait for BEGIN1 byte
         case BEGIN1:
-            state->sum = b;
+            pms_parse_ctx->sum = b;
             if (b == MAGIC1) {
-                state->state = BEGIN2;
+                pms_parse_ctx->state = BEGIN2;
             }
             break;
             // wait for BEGIN2 byte
         case BEGIN2:
-            state->sum += b;
+            pms_parse_ctx->sum += b;
             if (b == MAGIC2) {
-                state->state = LENGTH1;
+                pms_parse_ctx->state = LENGTH1;
             } else {
-                state->state = BEGIN1;
+                pms_parse_ctx->state = BEGIN1;
                 // retry
-                return pms_process(state, b);
+                return pms_process(pms_parse_ctx, b);
             }
             break;
             // verify data length
         case LENGTH1:
-            state->sum += b;
-            state->len = b << 8;
-            state->state = LENGTH2;
+            pms_parse_ctx->sum += b;
+            pms_parse_ctx->len = b << 8;
+            pms_parse_ctx->state = LENGTH2;
             break;
         case LENGTH2:
-            state->sum += b;
-            state->len += b;
-            state->len -= 2;     // exclude checksum bytes
-            if (state->len <= state->size) {
-                state->idx = 0;
-                state->state = DATA;
+            pms_parse_ctx->sum += b;
+            pms_parse_ctx->len += b;
+            pms_parse_ctx->len -= 2;     // exclude checksum bytes
+            if (pms_parse_ctx->len <= pms_parse_ctx->size) {
+                pms_parse_ctx->idx = 0;
+                pms_parse_ctx->state = DATA;
             } else {
                 // bogus length
-                state->state = BEGIN1;
+                pms_parse_ctx->state = BEGIN1;
             }
             break;
             // store data
         case DATA:
-            state->sum += b;
-            if (state->idx < state->len) {
-                state->buf[state->idx++] = b;
+            pms_parse_ctx->sum += b;
+            if (pms_parse_ctx->idx < pms_parse_ctx->len) {
+                pms_parse_ctx->buf[pms_parse_ctx->idx++] = b;
             }
-            if (state->idx == state->len) {
-                state->state = CHECK1;
+            if (pms_parse_ctx->idx == pms_parse_ctx->len) {
+                pms_parse_ctx->state = CHECK1;
             }
             break;
             // store checksum
         case CHECK1:
-            state->chk = b << 8;
-            state->state = CHECK2;
+            pms_parse_ctx->chk = b << 8;
+            pms_parse_ctx->state = CHECK2;
             break;
             // verify checksum
         case CHECK2:
-            state->chk += b;
-            state->state = BEGIN1;
-            return (state->chk == state->sum);
+            pms_parse_ctx->chk += b;
+            pms_parse_ctx->state = BEGIN1;
+            return (pms_parse_ctx->chk == pms_parse_ctx->sum);
         default:
-            state->state = BEGIN1;
+            pms_parse_ctx->state = BEGIN1;
             break;
     }
     return false;
@@ -188,42 +188,42 @@ bool pms_process(PMS_PARSE_CTX *state, uint8_t b) {
     Parses a complete measurement data frame into a structure.
     @param[out] meas the parsed measurement data
  */
-void pms5003_parse(PMS_PARSE_CTX *state, pms5003_meas_t *meas) {
-    meas->conc_pm1_0_cf1 = read_uint16(state->buf, 0);
-    meas->conc_pm2_5_cf1 = read_uint16(state->buf, 2);
-    meas->conc_pm10_0_cf1 = read_uint16(state->buf, 4);
-    meas->conc_pm1_0_amb = read_uint16(state->buf, 6);
-    meas->conc_pm2_5_amb = read_uint16(state->buf, 8);
-    meas->conc_pm10_0_amb = read_uint16(state->buf, 10);
-    meas->raw_gt0_3um = read_uint16(state->buf, 12);
-    meas->raw_gt0_5um = read_uint16(state->buf, 14);
-    meas->raw_gt1_0um = read_uint16(state->buf, 16);
-    meas->raw_gt2_5um = read_uint16(state->buf, 18);
-    meas->raw_gt5_0um = read_uint16(state->buf, 20);
-    meas->raw_gt10_0um = read_uint16(state->buf, 22);
-    meas->hcho = read_uint16(state->buf, 24);
-    meas->temperature = read_uint16(state->buf, 26);
-    meas->humidity = read_uint16(state->buf, 28);
-    meas->reserve = read_uint16(state->buf, 30);
-    meas->version = state->buf[32];
-    meas->errorCode = state->buf[33];
+void pms5003_parse(const uint8_t *buf, pms5003_meas_t *meas) {
+    meas->conc_pm1_0_cf1 = read_uint16(buf, 0);
+    meas->conc_pm2_5_cf1 = read_uint16(buf, 2);
+    meas->conc_pm10_0_cf1 = read_uint16(buf, 4);
+    meas->conc_pm1_0_amb = read_uint16(buf, 6);
+    meas->conc_pm2_5_amb = read_uint16(buf, 8);
+    meas->conc_pm10_0_amb = read_uint16(buf, 10);
+    meas->raw_gt0_3um = read_uint16(buf, 12);
+    meas->raw_gt0_5um = read_uint16(buf, 14);
+    meas->raw_gt1_0um = read_uint16(buf, 16);
+    meas->raw_gt2_5um = read_uint16(buf, 18);
+    meas->raw_gt5_0um = read_uint16(buf, 20);
+    meas->raw_gt10_0um = read_uint16(buf, 22);
+    meas->hcho = read_uint16(buf, 24);
+    meas->temperature = read_uint16(buf, 26);
+    meas->humidity = read_uint16(buf, 28);
+    meas->reserve = read_uint16(buf, 30);
+    meas->version = buf[32];
+    meas->errorCode = buf[33];
 }
 
-void pms7003_parse(PMS_PARSE_CTX *state, pms7003_meas_t *meas) {
-    meas->conc_pm1_0_cf1 = read_uint16(state->buf, 0);
-    meas->conc_pm2_5_cf1 = read_uint16(state->buf, 2);
-    meas->conc_pm10_0_cf1 = read_uint16(state->buf, 4);
-    meas->conc_pm1_0_amb = read_uint16(state->buf, 6);
-    meas->conc_pm2_5_amb = read_uint16(state->buf, 8);
-    meas->conc_pm10_0_amb = read_uint16(state->buf, 10);
-    meas->raw_gt0_3um = read_uint16(state->buf, 12);
-    meas->raw_gt0_5um = read_uint16(state->buf, 14);
-    meas->raw_gt1_0um = read_uint16(state->buf, 16);
-    meas->raw_gt2_5um = read_uint16(state->buf, 18);
-    meas->raw_gt5_0um = read_uint16(state->buf, 20);
-    meas->raw_gt10_0um = read_uint16(state->buf, 22);
-    meas->version = state->buf[24];
-    meas->errorCode = state->buf[25];
+void pms7003_parse(const uint8_t *buf, pms7003_meas_t *meas) {
+    meas->conc_pm1_0_cf1 = read_uint16(buf, 0);
+    meas->conc_pm2_5_cf1 = read_uint16(buf, 2);
+    meas->conc_pm10_0_cf1 = read_uint16(buf, 4);
+    meas->conc_pm1_0_amb = read_uint16(buf, 6);
+    meas->conc_pm2_5_amb = read_uint16(buf, 8);
+    meas->conc_pm10_0_amb = read_uint16(buf, 10);
+    meas->raw_gt0_3um = read_uint16(buf, 12);
+    meas->raw_gt0_5um = read_uint16(buf, 14);
+    meas->raw_gt1_0um = read_uint16(buf, 16);
+    meas->raw_gt2_5um = read_uint16(buf, 18);
+    meas->raw_gt5_0um = read_uint16(buf, 20);
+    meas->raw_gt10_0um = read_uint16(buf, 22);
+    meas->version = buf[24];
+    meas->errorCode = buf[25];
 }
 
 
@@ -422,7 +422,7 @@ int main(int argc, char *argv[]) {
 
                 pms5003_meas_t pms5003_meas;
 
-                pms5003_parse(&pms_parse_ctx, &pms5003_meas);
+                pms5003_parse(pms_parse_ctx.buf, &pms5003_meas);
 
                 char *post_flag = "-";
 
@@ -458,7 +458,7 @@ int main(int argc, char *argv[]) {
 
                 pms7003_meas_t pms7003_meas;
 
-                pms7003_parse(&pms_parse_ctx, &pms7003_meas);
+                pms7003_parse(pms_parse_ctx.buf, &pms7003_meas);
 
                 printf("%s\tpm1= %dug/m³\tpm25= %dug/m³\tpm10= %dug/m³\n",
                        current_time_str,

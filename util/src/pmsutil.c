@@ -41,7 +41,7 @@ void pms_current_local_time_str(char* timestr, size_t size)
             1900+p->tm_year, 1+p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec/1000);
 }
 
-uint16_t read_uint16(uint8_t *buf, int idx) {
+uint16_t read_uint16(const uint8_t *buf, int idx) {
     uint16_t data;
     data = buf[idx] << 8;
     data += buf[idx + 1];
