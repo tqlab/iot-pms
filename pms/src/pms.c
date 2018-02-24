@@ -14,7 +14,7 @@
 #include <getopt.h>
 #include <curl/curl.h>
 #include "pms.h"
-#include "pmsutil.h"
+#include "pms_util.h"
 
 size_t curl_write_data_null(void *buffer, size_t size, size_t nmemb, void *userp)
 {
@@ -302,7 +302,7 @@ void print_usage() {
 }
 
 void print_version() {
-    printf("pms version\n");
+    printf("PMS version %s, build from git version: %s\n", PMS_VERSION, PMS_GIT_SHA1);
 }
 
 int main(int argc, char *argv[]) {

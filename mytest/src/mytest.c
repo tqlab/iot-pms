@@ -6,7 +6,7 @@
 #include <sys/time.h>
 #include <curl/curl.h>
 #include <string.h>
-#include "pmsutil.h"
+#include "pms_util.h"
 
 void test_curl();
 void test_long_int();

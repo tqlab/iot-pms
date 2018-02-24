@@ -14,6 +14,9 @@ void pms_current_local_time_str(char* timestr, size_t size);
 
 uint16_t read_uint16(const uint8_t *buf, int idx);
 
+extern const char PMS_GIT_SHA1[];
+extern const char PMS_VERSION[];
+
 /*
 #define LOG(format, arguments...) \
     printf(format, ##arguments);    \
