@@ -13,8 +13,8 @@ void test_long_int();
 
 int main(int argc, char *argv[])
 {
-    test_curl();
-    //test_long_int();
+    //test_curl();
+    test_long_int();
 }
 
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
