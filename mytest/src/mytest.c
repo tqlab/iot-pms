@@ -110,4 +110,6 @@ void test_long_int()
 
     uint64_t tt = pms_current_time_millis(&timestamp_2);
     printf("8. %"PRIu64"\n", tt);
+
+    printf("9. %06.1f\n", 1.234567);
 }
