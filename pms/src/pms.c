@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <curl/curl.h>
+#include <inttypes.h>
 #include "pms.h"
 #include "pms_util.h"
 
@@ -447,8 +448,7 @@ int main(int argc, char *argv[]) {
 
 
                 // output to console
-                LOG_I("%s, pm1= %dug/m^3, pm25= %dug/m^3, pm10= %dug/m^3, hcho= %dug/m^3, temperature= %.1fC, humidity= %.1f％, %s\n",
-                       current_time_str,
+                LOG_I("pm1= %dug/m^3, pm25= %dug/m^3, pm10= %dug/m^3, hcho= %dug/m^3, temperature= %.1fC, humidity= %.1f％, %s\n",
                        pms5003_meas.conc_pm1_0_cf1,
                        pms5003_meas.conc_pm2_5_cf1, pms5003_meas.conc_pm10_0_cf1,
                        pms5003_meas.hcho, (double)pms5003_meas.temperature/10, (double)pms5003_meas.humidity/10, post_flag);
@@ -469,8 +469,7 @@ int main(int argc, char *argv[]) {
 
                 pms7003_parse(pms_parse_ctx.buf, &pms7003_meas);
 
-                LOG_I("%s, pm1= %dug/m^3, pm25= %dug/m^3, pm10= %dug/m^3\n",
-                       current_time_str,
+                LOG_I("pm1= %dug/m^3, pm25= %dug/m^3, pm10= %dug/m^3\n",
                        pms7003_meas.conc_pm1_0_cf1,
                        pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
                 fflush(stdout);
