@@ -29,13 +29,6 @@ void pms_current_local_time_str(char* timestr, size_t size)
 
     gettimeofday(&tv, &tz);
 
-    /*
-    printf("tv_sec:%ld\n",tv.tv_sec);
-    printf("tv_usec:%ld\n",tv.tv_usec);
-    printf("tz_minuteswest:%d\n",tz.tz_minuteswest);
-    printf("tz_dsttime:%d\n",tz.tz_dsttime);
-    */
-
     struct tm *p = localtime(&tv.tv_sec);
     sprintf(timestr, "%4d-%02d-%02d %02d:%02d:%02d.%03d",
             1900+p->tm_year, 1+p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec/1000);
