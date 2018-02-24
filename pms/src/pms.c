@@ -456,12 +456,10 @@ int main(int argc, char *argv[]) {
 
                 if (log_fp != NULL) {
                     // output to log file
-                    fprintf(log_fp, "%s,%"PRIu64",%d,%d,%d,%d,%d,%s\n",
+                    FLOG_I(log_fp, "%s,%"PRIu64",%d,%d,%d,%d,%d,%s",
                             current_time_str,current_timestamp,
                             pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
                             pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
-
-                    fflush(log_fp);
                 }
             } else if (strcmp(model, "PMS7003") == 0) {
 

@@ -87,6 +87,16 @@ extern int use_tty;
     }                                                                            \
     while (0)
 
+#define FLOG_I(file, format, ...)                                                \
+    do {                                                                         \
+            char timestr[20];                                                    \
+            pms_current_local_time_str(timestr, 20);                             \
+            fprintf(stdout, "%s, INFO  - " format "\n",                          \
+                timestr,                                                         \
+                ## __VA_ARGS__);                                                 \
+            fflush(file);                                                        \
+    }                                                                            \
+    while (0)
 
 /* LOG END */
 
