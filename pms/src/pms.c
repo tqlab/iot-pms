@@ -474,7 +474,7 @@ int main(int argc, char *argv[]) {
 
 
                 if (log_fp != NULL) {
-                    fprintf(log_fp, "%s,%"PRIu64",%d,%d,%d\n",
+                    FLOG_I(log_fp, "%s,%"PRIu64",%d,%d,%d",
                             current_timestamp,
                             pms7003_meas.conc_pm1_0_cf1,
                             pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
