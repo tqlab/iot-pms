@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
                        current_time_str,
                        pms5003_meas.conc_pm1_0_cf1,
                        pms5003_meas.conc_pm2_5_cf1, pms5003_meas.conc_pm10_0_cf1,
-                       pms5003_meas.hcho, pms5003_meas.temperature/10, pms5003_meas.humidity/10, post_flag);
+                       pms5003_meas.hcho, (double)pms5003_meas.temperature/10, (double)pms5003_meas.humidity/10, post_flag);
                 fflush(stdout);
 
                 if (log_fp != NULL) {
@@ -469,7 +469,7 @@ int main(int argc, char *argv[]) {
 
                 pms7003_parse(pms_parse_ctx.buf, &pms7003_meas);
 
-                printf("%s, pm1= %dug/m³, pm25= %dug/m^3, pm10= %dug/m^3\n",
+                printf("%s, pm1= %dug/m^3, pm25= %dug/m^3, pm10= %dug/m^3\n",
                        current_time_str,
                        pms7003_meas.conc_pm1_0_cf1,
                        pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
