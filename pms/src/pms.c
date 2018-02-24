@@ -463,7 +463,7 @@ int main(int argc, char *argv[]) {
 
                     fflush(log_fp);
                 }
-            } else {
+            } else if (strcmp(model, "PMS7003") == 0) {
 
                 pms7003_meas_t pms7003_meas;
 
@@ -484,6 +484,10 @@ int main(int argc, char *argv[]) {
                     fflush(log_fp);
                 }
 
+            } else {
+                print_usage();
+                printf("Unsupported model.\n");
+                exit(EXIT_FAILURE);
             }
 
         }
