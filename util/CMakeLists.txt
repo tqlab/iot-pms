@@ -1,7 +1,7 @@
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 EXECUTE_PROCESS(COMMAND
-        git describe --match=NeVeRmAtCh --always --abbrev=40 --dirty=[*]
+        git describe --match=NeVeRmAtCh --always --abbrev=7 --dirty=[*]
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         OUTPUT_VARIABLE PMS_GIT_SHA1
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
