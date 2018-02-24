@@ -292,7 +292,7 @@ int set_interface_attribs(int fd, int speed) {
 
 void print_version() {
     printf("PMS version %s, build from git version: %s\n", PMS_VERSION, PMS_GIT_SHA1);
-    printf("Support model: PMS7003, PMS5003ST\n");
+    printf("Supported model: PMS7003, PMS5003ST\n");
     printf("https://github.com/tqlab/iot-pms\n");
 }
 
