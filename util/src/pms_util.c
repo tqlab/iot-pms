@@ -20,8 +20,7 @@ uint64_t pms_current_time_millis() {
     return sec * 1000 + usec / 1000;
 }
 
-void pms_current_local_time_str(char* timestr, size_t size)
-{
+void pms_current_local_time_str(char* timestr, size_t size) {
     memset(timestr, 0, size);
 
     struct timeval    tv;

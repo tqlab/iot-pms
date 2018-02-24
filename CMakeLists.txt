@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
 project(pms)
 
+MESSAGE("Build Type: ${CMAKE_BUILD_TYPE}")
+
+IF(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-DPMS_DEBUG)
+    #add_compile_options(-DPMS_DEBUG)
+ELSE()
+ENDIF()
+
 SET(CMAKE_C_STANDARD 99)
 
 ADD_SUBDIRECTORY(pms)

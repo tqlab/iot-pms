@@ -10,11 +10,13 @@
 
 void test_curl();
 void test_long_int();
+void test_time();
 
 int main(int argc, char *argv[])
 {
     //test_curl();
     test_long_int();
+    test_time();
 }
 
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -92,24 +94,34 @@ void test_long_int()
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
 
-    printf("1. %"PRIu64"\n", sec);
-    printf("2. %"PRIu64"\n", usec);
+    LOG_I("1. %"PRIu64"\n", sec);
+    LOG_I("2. %"PRIu64"\n", usec);
 
     uint64_t timestamp = sec * 1000 + usec / 1000;
 
-    printf("3. %"PRIu64"\n", timestamp);
-    printf("4. %"PRId64"\n", timestamp);
+    LOG_I("3. %"PRIu64"\n", timestamp);
+    LOG_I("4. %"PRId64"\n", timestamp);
 
-    printf("5. %lld\n", timestamp);
+    LOG_I("5. %lld\n", timestamp);
 
     uint64_t timestamp_2 = 0;
 
-    printf("6. %"PRIu64"\n", pms_current_time_millis(&timestamp_2));
+    LOG_I("6. %"PRIu64"\n", pms_current_time_millis(&timestamp_2));
 
-    printf("7. %"PRIu64"\n", timestamp_2);
+    LOG_I("7. %"PRIu64"\n", timestamp_2);
 
     uint64_t tt = pms_current_time_millis(&timestamp_2);
-    printf("8. %"PRIu64"\n", tt);
+    LOG_I("8. %"PRIu64"\n", tt);
 
-    printf("9. %.1f\n", (double)123/10);
+    LOG_I("9. %.1f\n", (double)123/10);
+}
+
+void test_time() {
+    char time_str[40];
+
+    pms_current_local_time_str(time_str, 40);
+
+    LOG_D("%s\n", time_str);
+    LOG_I("%s\n", time_str);
+    LOG_E("%s\n", time_str);
 }
