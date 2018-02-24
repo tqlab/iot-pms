@@ -11,6 +11,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <curl/curl.h>
 #include "pms.h"
 #include "pmsutil.h"
@@ -289,22 +290,91 @@ int set_interface_attribs(int fd, int speed) {
     return 0;
 }
 
+void print_usage() {
+    printf("Usage: pms\n");
+    printf("            -m, --model <model>      PMS model.\n");
+    printf("            -d, --dev <dev>          Dev file path, such as /dev/ttyUSB0 on Linux or /dev/cu.SLAB_USBtoUART on Mac OSX.\n");
+    printf("            [-l, --label <label>]    Data post label.\n");
+    printf("            [-u, --url <url>]        Data post target url.\n");
+    printf("            [-h, --help]             Print this message.\n");
+    printf("            [-v, --version]          Print version message.\n");
+}
+
+void print_version() {
+    printf("pms version\n");
+}
+
 int main(int argc, char *argv[]) {
+
+    /*
     if (argc < 5) {
         printf("Usage: pms %s %s %s %s\n", "5003", "/dev/ttyUSB0", "bedroom", "http://xxx.xxx.xxx/pms/post.json");
         return 0;
     }
+     */
 
+    char *model = NULL;
+    char *dev_file_path = NULL;
 
-    char *type = argv[1];
-    char *dev_file_path = argv[2];
+    char *label = NULL;
+    char *url = NULL;
 
-    char *label = argv[3];
-    char *url = argv[4];
+    static struct option long_options[] = {
+            {"model", required_argument, NULL, 'm'},
+            {"dev",  required_argument,       NULL, 'd'},
+            {"label", optional_argument, NULL, 'l'},
+            {"url", optional_argument, NULL, 'u'},
+            {"help", no_argument, NULL, 'h'},
+            {"version", no_argument, NULL, 'v'},
+            {NULL, 0, NULL, 0}
+    };
+
+    int opt;
+    int option_index = 0;
+
+    opterr = 0;
+
+    while ( (opt = getopt_long(argc, argv, "m:d:l::u::hv", long_options, &option_index)) != -1) {
+        switch (opt) {
+
+            case 'm' :
+                model = optarg;
+                break;
+            case 'd' :
+                dev_file_path = optarg;
+                break;
+            case 'l' :
+                label = optarg;
+                break;
+            case 'u':
+                url = optarg;
+                break;
+            case 'h':
+                print_usage();
+                exit(EXIT_SUCCESS);
+            case 'v':
+                print_version();
+                exit(EXIT_SUCCESS);
+            case '?':
+                opterr = 1;
+                break;
+        }
+    }
+
+    if (opterr) {
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
+
+    if (model == NULL || dev_file_path == NULL) {
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
+
 
     char log_file_name[64] = {0};
     strcat (log_file_name, "pms");
-    strcat (log_file_name, type);
+    strcat (log_file_name, model);
     strcat (log_file_name, ".log");
 
     FILE *log_fp = fopen(log_file_name, "w+");
@@ -348,7 +418,7 @@ int main(int argc, char *argv[]) {
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
-            if (strcmp(type, "5003") == 0) {
+            if (strcmp(model, "5003") == 0) {
 
                 pms5003_meas_t pms5003_meas;
 
@@ -356,7 +426,7 @@ int main(int argc, char *argv[]) {
 
                 char *post_flag = "-";
 
-                if (current_timestamp - last_post_timestamp > 60 * 1000) {
+                if (label !=NULL && url != NULL && current_timestamp - last_post_timestamp > 60 * 1000) {
 
                     // post data to server every minute
                     curl_post_data(label, url, pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
