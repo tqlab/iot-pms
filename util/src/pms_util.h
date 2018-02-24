@@ -91,7 +91,7 @@ extern int use_tty;
     do {                                                                         \
             char timestr[20];                                                    \
             pms_current_local_time_str(timestr, 20);                             \
-            fprintf(stdout, "%s, INFO  - " format "\n",                          \
+            fprintf(file, "%s, INFO  - " format "\n",                          \
                 timestr,                                                         \
                 ## __VA_ARGS__);                                                 \
             fflush(file);                                                        \
