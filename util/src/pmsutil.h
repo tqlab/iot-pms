@@ -12,7 +12,7 @@ uint64_t pms_current_time_millis();
 
 void pms_current_local_time_str(char* timestr, size_t size);
 
-uint16_t read_uint16(uint8_t *buf, int idx);
+uint16_t read_uint16(const uint8_t *buf, int idx);
 
 /*
 #define LOG(format, arguments...) \

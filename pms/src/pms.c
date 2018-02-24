@@ -294,6 +294,7 @@ void print_usage() {
     printf("Usage: pms\n");
     printf("            -m, --model <model>      PMS model.\n");
     printf("            -d, --dev <dev>          Dev file path, such as /dev/ttyUSB0 on Linux or /dev/cu.SLAB_USBtoUART on Mac OSX.\n");
+    printf("            [--log <log file>]       Log file.\n");
     printf("            [-l, --label <label>]    Data post label.\n");
     printf("            [-u, --url <url>]        Data post target url.\n");
     printf("            [-h, --help]             Print this message.\n");
@@ -316,12 +317,15 @@ int main(int argc, char *argv[]) {
     char *model = NULL;
     char *dev_file_path = NULL;
 
+    char *log_file_name = NULL;
+
     char *label = NULL;
     char *url = NULL;
 
     static struct option long_options[] = {
             {"model", required_argument, NULL, 'm'},
             {"dev",  required_argument,       NULL, 'd'},
+            {"log",  required_argument,       NULL, 'o'},
             {"label", optional_argument, NULL, 'l'},
             {"url", optional_argument, NULL, 'u'},
             {"help", no_argument, NULL, 'h'},
@@ -342,6 +346,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'd' :
                 dev_file_path = optarg;
+                break;
+            case 'o' :
+                log_file_name = optarg;
                 break;
             case 'l' :
                 label = optarg;
@@ -371,13 +378,10 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-
-    char log_file_name[64] = {0};
-    strcat (log_file_name, "pms");
-    strcat (log_file_name, model);
-    strcat (log_file_name, ".log");
-
-    FILE *log_fp = fopen(log_file_name, "w+");
+    FILE *log_fp = NULL;
+    if (log_file_name != NULL) {
+        log_fp = fopen(log_file_name, "w+");
+    }
 
     int dev_fd = open(dev_file_path, O_RDWR | O_NOCTTY | O_SYNC);
     if (dev_fd < 0) {
@@ -446,14 +450,15 @@ int main(int argc, char *argv[]) {
                        pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
                 fflush(stdout);
 
-                // output to log file
-                fprintf(log_fp, "%s,%d,%d,%d,%d,%d,%s\n",
-                        current_time_str,
-                        pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
-                        pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
+                if (log_fp != NULL) {
+                    // output to log file
+                    fprintf(log_fp, "%s,%d,%d,%d,%d,%d,%s\n",
+                            current_time_str,
+                            pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
+                            pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
 
-                fflush(log_fp);
-
+                    fflush(log_fp);
+                }
             } else {
 
                 pms7003_meas_t pms7003_meas;
@@ -466,11 +471,15 @@ int main(int argc, char *argv[]) {
                        pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
                 fflush(stdout);
 
-                fprintf(log_fp, "%s,%d,%d,%d\n",
-                        current_time_str,
-                        pms7003_meas.conc_pm1_0_cf1,
-                        pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
-                fflush(log_fp);
+
+                if (log_fp != NULL) {
+                    fprintf(log_fp, "%s,%d,%d,%d\n",
+                            current_time_str,
+                            pms7003_meas.conc_pm1_0_cf1,
+                            pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
+                    fflush(log_fp);
+                }
+
             }
 
         }
