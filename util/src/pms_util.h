@@ -16,6 +16,7 @@ uint16_t read_uint16(const uint8_t *buf, int idx);
 
 extern const char PMS_GIT_SHA1[];
 extern const char PMS_VERSION[];
+extern const char PMS_COMPILE_DATETIME[];
 
 /*
 #define LOG(format, arguments...) \

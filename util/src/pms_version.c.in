@@ -2,3 +2,4 @@
 
 const char PMS_GIT_SHA1[] = "@PMS_GIT_SHA1@";
 const char PMS_VERSION[] = "1.0.0";
+const char PMS_COMPILE_DATETIME[] = "@PMS_COMPILE_DATETIME@";
