@@ -290,7 +290,14 @@ int set_interface_attribs(int fd, int speed) {
     return 0;
 }
 
+void print_version() {
+    printf("PMS version %s, build from git version: %s\n", PMS_VERSION, PMS_GIT_SHA1);
+    printf("Support model: PMS7003, PMS5003ST\n");
+    printf("https://github.com/tqlab/iot-pms\n");
+}
+
 void print_usage() {
+    print_version();
     printf("Usage: pms\n");
     printf("            -m, --model <model>      PMS model.\n");
     printf("            -d, --dev <dev>          Dev file path, such as /dev/ttyUSB0 on Linux or /dev/cu.SLAB_USBtoUART on Mac OSX.\n");
@@ -301,9 +308,6 @@ void print_usage() {
     printf("            [-v, --version]          Print version message.\n");
 }
 
-void print_version() {
-    printf("PMS version %s, build from git version: %s\n", PMS_VERSION, PMS_GIT_SHA1);
-}
 
 int main(int argc, char *argv[]) {
 
@@ -422,7 +426,7 @@ int main(int argc, char *argv[]) {
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
-            if (strcmp(model, "5003") == 0) {
+            if (strcmp(model, "PMS5003ST") == 0) {
 
                 pms5003_meas_t pms5003_meas;
 
