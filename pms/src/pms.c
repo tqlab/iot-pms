@@ -385,7 +385,7 @@ int main(int argc, char *argv[]) {
 
     FILE *log_fp = NULL;
     if (log_file_name != NULL) {
-        log_fp = fopen(log_file_name, "w+");
+        log_fp = fopen(log_file_name, "a+");
     }
 
     int dev_fd = open(dev_file_path, O_RDWR | O_NOCTTY | O_SYNC);
