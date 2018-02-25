@@ -141,7 +141,7 @@ void test_time() {
 #endif
 
 
-    char aaa[] = "2018-02-26 01:03:00.425";
+    char aaa[] = "33333";
     /*
     LOG_D("%s", aaa);
 
