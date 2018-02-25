@@ -122,6 +122,8 @@ void test_time() {
 
     pms_current_local_time_str(time_str, 40);
 
+    printf("%s\n", time_str);
+
     LOG_D("%s", time_str);
     LOG_I("%s", time_str);
     LOG_E("%s", time_str);
