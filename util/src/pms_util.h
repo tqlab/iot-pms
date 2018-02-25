@@ -46,9 +46,9 @@ extern int use_tty;
     }                                                                               \
     while (0)
 #else
-#define LOG_D(format, ...)                                                       \
-    do {                                                                         \
-    }                                                                            \
+#define LOG_D(format, ...)                                                          \
+    do {                                                                            \
+    }                                                                               \
     while (0)
 #endif
 
