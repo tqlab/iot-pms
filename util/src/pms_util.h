@@ -31,15 +31,15 @@ extern int use_tty;
 #ifdef PMS_DEBUG
 #define LOG_D(format, ...)                                                       \
     do {                                                                         \
-            char timestr[20];                                                    \
-            pms_current_local_time_str(timestr, 20);                             \
+            char ___timestr[20];                                                    \
+            pms_current_local_time_str(___timestr, 20);                             \
             if (isatty(STDERR_FILENO)) {                                         \
                 fprintf(stdout, "%s, %s:%d, \e[01;35mDEBUG\e[0m - " format "\n", \
-                        timestr, __FILE__, __LINE__,                             \
+                        ___timestr, __FILE__, __LINE__,                             \
                         ## __VA_ARGS__);                                         \
             } else {                                                             \
                 fprintf(stdout, "%s, DEBUG - " format "\n",                      \
-                        timestr,                                                 \
+                        ___timestr,                                                 \
                         ## __VA_ARGS__);                                         \
             }                                                                    \
             fflush(stdout);                                                      \
