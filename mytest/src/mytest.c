@@ -139,4 +139,14 @@ void test_time() {
 #ifdef PMS_DEBUG
     LOG_E("%s", "test");
 #endif
+
+    char aaa[] = "2018-02-26 01:03:00.425";
+
+    LOG_D("%s", aaa);
+
+    printf("printfa: %s\n", aaa);
+
+    LOG_D("%s", aaa);
+
+    printf("printfb: %s\n", aaa);
 }
