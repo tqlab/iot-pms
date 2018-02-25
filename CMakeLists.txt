@@ -4,7 +4,7 @@ project(pms)
 MESSAGE("CMake Version: ${CMAKE_VERSION}")
 MESSAGE("Build Type: ${CMAKE_BUILD_TYPE}")
 
-IF(DEFINED ${CMAKE_BUILD_TYPE} AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+IF(DEFINED CMAKE_BUILD_TYPE AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     add_definitions(-DPMS_DEBUG)
     #add_compile_options(-DPMS_DEBUG)
 ELSE()

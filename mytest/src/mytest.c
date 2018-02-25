@@ -93,34 +93,42 @@ void test_long_int()
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
 
-    LOG_I("1. %"PRIu64"\n", sec);
-    LOG_I("2. %"PRIu64"\n", usec);
+    LOG_I("1. %"PRIu64"", sec);
+    LOG_I("2. %"PRIu64"", usec);
 
     uint64_t timestamp = sec * 1000 + usec / 1000;
 
-    LOG_I("3. %"PRIu64"\n", timestamp);
-    LOG_I("4. %"PRId64"\n", timestamp);
+    LOG_I("3. %"PRIu64"", timestamp);
+    LOG_I("4. %"PRId64"", timestamp);
 
-    LOG_I("5. %lld\n", timestamp);
+    LOG_I("5. %lld", timestamp);
 
     uint64_t timestamp_2 = 0;
 
-    LOG_I("6. %"PRIu64"\n", pms_current_time_millis(&timestamp_2));
+    LOG_I("6. %"PRIu64"", pms_current_time_millis(&timestamp_2));
 
-    LOG_I("7. %"PRIu64"\n", timestamp_2);
+    LOG_I("7. %"PRIu64"", timestamp_2);
 
     uint64_t tt = pms_current_time_millis(&timestamp_2);
-    LOG_I("8. %"PRIu64"\n", tt);
+    LOG_I("8. %"PRIu64"", tt);
 
-    LOG_I("9. %.1f\n", (double)123/10);
+    LOG_I("9. %.1f", (double)123/10);
 }
+
+#define TEST_STR "123456"
 
 void test_time() {
     char time_str[40];
 
     pms_current_local_time_str(time_str, 40);
 
-    LOG_D("%s\n", time_str);
-    LOG_I("%s\n", time_str);
-    LOG_E("%s\n", time_str);
+    LOG_D("%s", time_str);
+    LOG_I("%s", time_str);
+    LOG_E("%s", time_str);
+
+    LOG_D("%s", TEST_STR);
+
+#ifdef PMS_DEBUG
+    LOG_E("%s", "test");
+#endif
 }

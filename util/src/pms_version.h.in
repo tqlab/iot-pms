@@ -1,0 +1,6 @@
+#ifndef PMS_VERSION_H
+#define PMS_VERSION_H
+
+#define PMS_GIT_SHA1_AAA "@PMS_GIT_SHA1@"
+
+#endif
