@@ -122,11 +122,17 @@ void test_time() {
 
     pms_current_local_time_str(time_str, 40);
 
-    printf("printf: %s\n", time_str);
+    printf("printf1: %s\n", time_str);
 
     LOG_D("%s", time_str);
+
+    printf("printf2: %s\n", time_str);
     LOG_I("%s", time_str);
+
+    printf("printf3: %s\n", time_str);
     LOG_E("%s", time_str);
+
+    printf("printf4: %s\n", time_str);
 
     LOG_D("%s", TEST_STR);
 
