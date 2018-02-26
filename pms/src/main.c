@@ -88,9 +88,10 @@ void curl_post_data(const char *label, const char *url, const PMS_MEAS_T pms_mea
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
         /* Check for errors */
-        if (res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
+        if (res != CURLE_OK) {
+            LOG_E("curl_easy_perform() failed: %s",
+                  curl_easy_strerror(res));
+        }
 
         /* always cleanup */
         curl_easy_cleanup(curl);
