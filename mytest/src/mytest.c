@@ -141,8 +141,9 @@ void test_time() {
 #endif
 
 
-    char aaa[] = "33333";
     /*
+    char aaa[] = "33333";
+
     LOG_D("%s", aaa);
 
     printf("printfa: %s\n", aaa);

@@ -31,15 +31,15 @@ extern int use_tty;
 #ifdef PMS_DEBUG
 #define LOG_D(format, ...)                                                          \
     do {                                                                            \
-            char ___timestr[20];                                                    \
-            pms_current_local_time_str(___timestr, 20);                             \
+            char ___timestr[30];                                                    \
+            pms_current_local_time_str(___timestr, 30);                             \
             if (isatty(STDERR_FILENO)) {                                            \
                 fprintf(stdout, "%s, \e[01;35m[DEBUG]\e[0m <%s:%d> - " format "\n", \
                         ___timestr, __FILE__, __LINE__,                             \
                         ## __VA_ARGS__);                                            \
             } else {                                                                \
-                fprintf(stdout, "%s, [DEBUG] - " format "\n",                       \
-                        ___timestr,                                                 \
+                fprintf(stdout, "%s, [DEBUG] <%s:%d> - " format "\n",               \
+                        ___timestr, __FILE__, __LINE__,                             \
                         ## __VA_ARGS__);                                            \
             }                                                                       \
             fflush(stdout);                                                         \
@@ -54,8 +54,8 @@ extern int use_tty;
 
 #define LOG_I(format, ...)                                                          \
     do {                                                                            \
-            char timestr[20];                                                       \
-            pms_current_local_time_str(timestr, 20);                                \
+            char timestr[30];                                                       \
+            pms_current_local_time_str(timestr, 30);                                \
             if (isatty(STDERR_FILENO)) {                                            \
                 fprintf(stdout, "%s, \e[01;32m[INFO ]\e[0m - " format "\n",         \
                         timestr,                                                    \
@@ -71,16 +71,16 @@ extern int use_tty;
 
 #define LOG_E(format, ...)                                                          \
     do {                                                                            \
-            char timestr[20];                                                       \
-            pms_current_local_time_str(timestr, 20);                                \
+            char timestr[30];                                                       \
+            pms_current_local_time_str(timestr, 30);                                \
             if (isatty(STDERR_FILENO)) {                                            \
                 fprintf(stdout, "%s, \e[01;31m[ERROR]\e[0m <%s:%d> - " format "\n", \
                         timestr, __FILE__, __LINE__,                                \
                         ## __VA_ARGS__);                                            \
                 fflush(stdout);                                                     \
             } else {                                                                \
-                fprintf(stderr, "%s, [ERROR] - " format "\n",                       \
-                        timestr,                                                    \
+                fprintf(stderr, "%s, [ERROR] <%s:%d> - " format "\n",               \
+                        timestr, __FILE__, __LINE__,                                \
                         ## __VA_ARGS__);                                            \
                 fflush(stderr);                                                     \
             }                                                                       \
@@ -89,8 +89,8 @@ extern int use_tty;
 
 #define FLOG_I(file, format, ...)                                                   \
     do {                                                                            \
-            char timestr[20];                                                       \
-            pms_current_local_time_str(timestr, 20);                                \
+            char timestr[30];                                                       \
+            pms_current_local_time_str(timestr, 30);                                \
             fprintf(file, "%s, [INFO ] - " format "\n",                             \
                 timestr,                                                            \
                 ## __VA_ARGS__);                                                    \
