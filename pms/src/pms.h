@@ -5,6 +5,8 @@
 #ifndef PMS_PMS_H
 #define PMS_PMS_H
 
+#include <stdbool.h>
+
 // parsed measurement data
 typedef struct {
     uint16_t conc_pm1_0_cf1;
@@ -37,12 +39,6 @@ typedef struct {
 #define PMS_CMD_TRIG_MANUAL 0xE2    // trigger a manual measurement
 #define PMS_CMD_ON_STANDBY  0xE4    // data=0: go to standby mode, data=1: go to normal mode
 
-
-// magic header bytes (actually ASCII 'B' and 'M')
-#define MAGIC1 0x42
-#define MAGIC2 0x4D
-
-
 // parsing state
 typedef enum {
     BEGIN1,
@@ -62,5 +58,12 @@ typedef struct {
     uint16_t chk, sum;
 } PMS_PARSE_CTX;
 
+
+void pms_init(PMS_PARSE_CTX *state);
+bool pms_process(PMS_PARSE_CTX *pms_parse_ctx, uint8_t b);
+void pms5003_parse(const uint8_t *buf, PMS_MEAS_T *meas);
+void pms7003_parse(const uint8_t *buf, PMS_MEAS_T *meas);
+int pms_create_cmd(uint8_t *buf, int size, uint8_t cmd, uint16_t data);
+int set_interface_attribs(int fd, int speed);
 
 #endif //PMS_PMS_H
