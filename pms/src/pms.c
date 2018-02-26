@@ -17,13 +17,11 @@
 #include "pms.h"
 #include "pms_util.h"
 
-size_t curl_write_data_null(void *buffer, size_t size, size_t nmemb, void *userp)
-{
+size_t curl_write_data_null(void *buffer, size_t size, size_t nmemb, void *userp) {
     return size * nmemb;
 }
 
-void curl_post_data(char *label, char *url, uint16_t pm25, uint16_t pm10, uint16_t hcho, uint16_t temperature,
-                    uint16_t humidity) {
+void curl_post_data(const char *label, const char *url, const PMS_MEAS_T pms_meas) {
     CURL *curl;
     CURLcode res;
 
@@ -41,40 +39,45 @@ void curl_post_data(char *label, char *url, uint16_t pm25, uint16_t pm10, uint16
                  CURLFORM_COPYCONTENTS, label, CURLFORM_END);
 
     char pm25_str[10];
-    sprintf(pm25_str, "%d", pm25);
+    sprintf(pm25_str, "%d", pms_meas.conc_pm2_5_amb);
     curl_formadd(&post,
                  &last,
                  CURLFORM_COPYNAME, "pm25",
                  CURLFORM_COPYCONTENTS, pm25_str, CURLFORM_END);
 
     char pm10_str[10];
-    sprintf(pm10_str, "%d", pm10);
+    sprintf(pm10_str, "%d", pms_meas.conc_pm10_0_amb);
     curl_formadd(&post,
                  &last,
                  CURLFORM_COPYNAME, "pm10",
                  CURLFORM_COPYCONTENTS, pm10_str, CURLFORM_END);
 
-    char hcho_str[10];
-    sprintf(hcho_str, "%d", hcho);
-    curl_formadd(&post,
-                 &last,
-                 CURLFORM_COPYNAME, "hcho",
-                 CURLFORM_COPYCONTENTS, hcho_str, CURLFORM_END);
+    if (pms_meas.has_hcho) {
+        char hcho_str[10];
+        sprintf(hcho_str, "%d", pms_meas.hcho);
+        curl_formadd(&post,
+                     &last,
+                     CURLFORM_COPYNAME, "hcho",
+                     CURLFORM_COPYCONTENTS, hcho_str, CURLFORM_END);
+    }
 
-    char temperature_str[10];
-    sprintf(temperature_str, "%d", temperature);
-    curl_formadd(&post,
-                 &last,
-                 CURLFORM_COPYNAME, "temperature",
-                 CURLFORM_COPYCONTENTS, temperature_str, CURLFORM_END);
+    if (pms_meas.has_temperature) {
+        char temperature_str[10];
+        sprintf(temperature_str, "%d", pms_meas.temperature);
+        curl_formadd(&post,
+                     &last,
+                     CURLFORM_COPYNAME, "temperature",
+                     CURLFORM_COPYCONTENTS, temperature_str, CURLFORM_END);
+    }
 
-    char humidity_str[10];
-    sprintf(humidity_str, "%d", humidity);
-    curl_formadd(&post,
-                 &last,
-                 CURLFORM_COPYNAME, "humidity",
-                 CURLFORM_COPYCONTENTS, humidity_str, CURLFORM_END);
-
+    if (pms_meas.has_humidity) {
+        char humidity_str[10];
+        sprintf(humidity_str, "%d", pms_meas.humidity);
+        curl_formadd(&post,
+                     &last,
+                     CURLFORM_COPYNAME, "humidity",
+                     CURLFORM_COPYCONTENTS, humidity_str, CURLFORM_END);
+    }
 
     curl = curl_easy_init();
     /* initalize custom header list (stating that Expect: 100-continue is not
@@ -189,7 +192,7 @@ bool pms_process(PMS_PARSE_CTX *pms_parse_ctx, uint8_t b) {
     Parses a complete measurement data frame into a structure.
     @param[out] meas the parsed measurement data
  */
-void pms5003_parse(const uint8_t *buf, pms5003_meas_t *meas) {
+void pms5003_parse(const uint8_t *buf, PMS_MEAS_T *meas) {
     meas->conc_pm1_0_cf1 = read_uint16(buf, 0);
     meas->conc_pm2_5_cf1 = read_uint16(buf, 2);
     meas->conc_pm10_0_cf1 = read_uint16(buf, 4);
@@ -202,15 +205,20 @@ void pms5003_parse(const uint8_t *buf, pms5003_meas_t *meas) {
     meas->raw_gt2_5um = read_uint16(buf, 18);
     meas->raw_gt5_0um = read_uint16(buf, 20);
     meas->raw_gt10_0um = read_uint16(buf, 22);
+
     meas->hcho = read_uint16(buf, 24);
+    meas->has_hcho = true;
     meas->temperature = read_uint16(buf, 26);
+    meas->has_temperature = true;
     meas->humidity = read_uint16(buf, 28);
+    meas->has_humidity = true;
+
     meas->reserve = read_uint16(buf, 30);
     meas->version = buf[32];
     meas->errorCode = buf[33];
 }
 
-void pms7003_parse(const uint8_t *buf, pms7003_meas_t *meas) {
+void pms7003_parse(const uint8_t *buf, PMS_MEAS_T *meas) {
     meas->conc_pm1_0_cf1 = read_uint16(buf, 0);
     meas->conc_pm2_5_cf1 = read_uint16(buf, 2);
     meas->conc_pm10_0_cf1 = read_uint16(buf, 4);
@@ -223,6 +231,11 @@ void pms7003_parse(const uint8_t *buf, pms7003_meas_t *meas) {
     meas->raw_gt2_5um = read_uint16(buf, 18);
     meas->raw_gt5_0um = read_uint16(buf, 20);
     meas->raw_gt10_0um = read_uint16(buf, 22);
+
+    meas->has_hcho = false;
+    meas->has_temperature = false;
+    meas->has_humidity = false;
+
     meas->version = buf[24];
     meas->errorCode = buf[25];
 }
@@ -328,14 +341,14 @@ int main(int argc, char *argv[]) {
     char *url = NULL;
 
     static struct option long_options[] = {
-            {"model", required_argument, NULL, 'm'},
-            {"dev",  required_argument,       NULL, 'd'},
-            {"log",  required_argument,       NULL, 'o'},
-            {"label", optional_argument, NULL, 'l'},
-            {"url", optional_argument, NULL, 'u'},
-            {"help", no_argument, NULL, 'h'},
-            {"version", no_argument, NULL, 'v'},
-            {NULL, 0, NULL, 0}
+            {"model",   required_argument, NULL, 'm'},
+            {"dev",     required_argument, NULL, 'd'},
+            {"log",     required_argument, NULL, 'o'},
+            {"label",   optional_argument, NULL, 'l'},
+            {"url",     optional_argument, NULL, 'u'},
+            {"help",    no_argument,       NULL, 'h'},
+            {"version", no_argument,       NULL, 'v'},
+            {NULL, 0,                      NULL, 0}
     };
 
     int opt;
@@ -343,7 +356,7 @@ int main(int argc, char *argv[]) {
 
     opterr = 0;
 
-    while ( (opt = getopt_long(argc, argv, "m:d:l::u::hv", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "m:d:l::u::hv", long_options, &option_index)) != -1) {
         switch (opt) {
 
             case 'm' :
@@ -418,73 +431,64 @@ int main(int argc, char *argv[]) {
 
         if (pms_process(&pms_parse_ctx, frameBuf[0])) {
 
-            // human readable time str
-            char current_time_str[40];
-
-            // get the time str
-            pms_current_local_time_str(current_time_str, 40);
-
             // current time millis
             uint64_t current_timestamp = pms_current_time_millis();
 
+            char *post_flag = "-";
+
+            if (label != NULL && url != NULL && current_timestamp - last_post_timestamp > 60 * 1000) {
+                // prepare to post
+                post_flag = "*";
+            }
+
+            PMS_MEAS_T pms_meas;
+
             if (strcmp(model, "PMS5003ST") == 0) {
 
-                pms5003_meas_t pms5003_meas;
-
-                pms5003_parse(pms_parse_ctx.buf, &pms5003_meas);
-
-                char *post_flag = "-";
-
-                if (label !=NULL && url != NULL && current_timestamp - last_post_timestamp > 60 * 1000) {
-
-                    // post data to server every minute
-                    curl_post_data(label, url, pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
-                                   pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity);
-
-                    last_post_timestamp = current_timestamp;
-
-                    post_flag = "*";
-                }
-
+                pms5003_parse(pms_parse_ctx.buf, &pms_meas);
 
                 // output to console
                 LOG_I("pm1=%dug/m^3, pm25=%dug/m^3, pm10=%dug/m^3, hcho=%dug/m^3, temperature=%.1fC, humidity=%.1f％, %s",
-                       pms5003_meas.conc_pm1_0_cf1,
-                       pms5003_meas.conc_pm2_5_cf1, pms5003_meas.conc_pm10_0_cf1,
-                       pms5003_meas.hcho, (double)pms5003_meas.temperature/10, (double)pms5003_meas.humidity/10, post_flag);
-                fflush(stdout);
+                      pms_meas.conc_pm1_0_cf1,
+                      pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
+                      pms_meas.hcho, (double) pms_meas.temperature / 10, (double) pms_meas.humidity / 10,
+                      post_flag);
 
                 if (log_fp != NULL) {
                     // output to log file
                     FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%d,%d,%s",
-                            current_timestamp,
-                            pms5003_meas.conc_pm2_5_amb, pms5003_meas.conc_pm10_0_amb,
-                            pms5003_meas.hcho, pms5003_meas.temperature, pms5003_meas.humidity, post_flag);
+                           current_timestamp,
+                           pms_meas.conc_pm2_5_amb, pms_meas.conc_pm10_0_amb,
+                           pms_meas.hcho, pms_meas.temperature, pms_meas.humidity, post_flag);
                 }
             } else if (strcmp(model, "PMS7003") == 0) {
 
-                pms7003_meas_t pms7003_meas;
+                pms7003_parse(pms_parse_ctx.buf, &pms_meas);
 
-                pms7003_parse(pms_parse_ctx.buf, &pms7003_meas);
-
-                LOG_I("pm1=%dug/m^3, pm25=%dug/m^3, pm10=%dug/m^3",
-                       pms7003_meas.conc_pm1_0_cf1,
-                       pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
-                fflush(stdout);
-
+                LOG_I("pm1=%dug/m^3, pm25=%dug/m^3, pm10=%dug/m^3, %s",
+                      pms_meas.conc_pm1_0_cf1,
+                      pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
+                      post_flag);
 
                 if (log_fp != NULL) {
-                    FLOG_I(log_fp, "%"PRIu64",%d,%d,%d",
-                            current_timestamp,
-                            pms7003_meas.conc_pm1_0_cf1,
-                            pms7003_meas.conc_pm2_5_cf1, pms7003_meas.conc_pm10_0_cf1);
-                    fflush(log_fp);
+                    FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%s",
+                           current_timestamp,
+                           pms_meas.conc_pm1_0_cf1,
+                           pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
+                           post_flag);
                 }
 
             } else {
                 print_usage();
                 printf("Unsupported model.\n");
                 exit(EXIT_FAILURE);
+            }
+
+            if (strcmp(post_flag, "*") == 0) {
+                // post data to server every minute
+                curl_post_data(label, url, pms_meas);
+
+                last_post_timestamp = current_timestamp;
             }
 
         }

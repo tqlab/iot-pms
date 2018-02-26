@@ -19,33 +19,18 @@ typedef struct {
     uint16_t raw_gt2_5um;
     uint16_t raw_gt5_0um;
     uint16_t raw_gt10_0um;
-    uint8_t version;
-    uint8_t errorCode;
-} pms7003_meas_t;
-
-// parsed measurement data
-typedef struct {
-    uint16_t conc_pm1_0_cf1;
-    uint16_t conc_pm2_5_cf1;
-    uint16_t conc_pm10_0_cf1;
-    uint16_t conc_pm1_0_amb;
-    uint16_t conc_pm2_5_amb;
-    uint16_t conc_pm10_0_amb;
-    uint16_t raw_gt0_3um;
-    uint16_t raw_gt0_5um;
-    uint16_t raw_gt1_0um;
-    uint16_t raw_gt2_5um;
-    uint16_t raw_gt5_0um;
-    uint16_t raw_gt10_0um;
 
     uint16_t hcho;
+    bool has_hcho;
     uint16_t temperature;
+    bool has_temperature;
     uint16_t humidity;
+    bool has_humidity;
     uint16_t reserve;
 
     uint8_t version;
     uint8_t errorCode;
-} pms5003_meas_t;
+} PMS_MEAS_T;
 
 // known command bytes
 #define PMS_CMD_AUTO_MANUAL 0xE1    // data=0: perform measurement manually, data=1: perform measurement automatically
