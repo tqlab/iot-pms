@@ -140,16 +140,4 @@ void test_time() {
     LOG_E("%s", "test");
 #endif
 
-
-    /*
-    char aaa[] = "33333";
-
-    LOG_D("%s", aaa);
-
-    printf("printfa: %s\n", aaa);
-
-    LOG_D("%s", aaa);
-
-    printf("printfb: %s\n", aaa);
-    */
 }
