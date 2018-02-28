@@ -113,13 +113,14 @@ void print_version() {
 void print_usage() {
     print_version();
     printf("usage: pms\n");
-    printf("            -m, --model <model>      PMS model.\n");
-    printf("            -d, --dev <dev>          Dev file path, such as /dev/ttyUSB0 on Linux or /dev/cu.SLAB_USBtoUART on Mac OSX.\n");
-    printf("            [--log <log file>]       Log file.\n");
-    printf("            [-l, --label <label>]    Data post label.\n");
-    printf("            [-u, --url <url>]        Data post target url.\n");
-    printf("            [-h, --help]             Print this message.\n");
-    printf("            [-v, --version]          Print version message.\n");
+    printf("            -m, --model <model>           PMS model.\n");
+    printf("            -d, --dev <dev>               Dev file path, such as /dev/ttyUSB0 on Linux or /dev/cu.SLAB_USBtoUART on Mac OSX.\n");
+    printf("            [--log <log file>]            Log file.\n");
+    printf("            [-l, --label <label>]         Data post label.\n");
+    printf("            [-u, --url <url>]             Data post target url.\n");
+    printf("            [-i, --interval <interval>]   Data post interval in mill secs.\n");
+    printf("            [-h, --help]                  Print this message.\n");
+    printf("            [-v, --version]               Print version message.\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -138,16 +139,18 @@ int main(int argc, char *argv[]) {
 
     char *label = NULL;
     char *url = NULL;
+    uint64_t interval = 60 * 1000;
 
     static struct option long_options[] = {
-            {"model",   required_argument, NULL, 'm'},
-            {"dev",     required_argument, NULL, 'd'},
-            {"log",     required_argument, NULL, 'o'},
-            {"label",   optional_argument, NULL, 'l'},
-            {"url",     optional_argument, NULL, 'u'},
-            {"help",    no_argument,       NULL, 'h'},
-            {"version", no_argument,       NULL, 'v'},
-            {NULL, 0,                      NULL, 0}
+            {"model",    required_argument, NULL, 'm'},
+            {"dev",      required_argument, NULL, 'd'},
+            {"log",      required_argument, NULL, 'o'},
+            {"label",    required_argument, NULL, 'l'},
+            {"url",      required_argument, NULL, 'u'},
+            {"interval", required_argument, NULL, 'i'},
+            {"help",     no_argument,       NULL, 'h'},
+            {"version",  no_argument,       NULL, 'v'},
+            {NULL, 0,                       NULL, 0}
     };
 
     int opt;
@@ -172,6 +175,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'u':
                 url = optarg;
+                break;
+            case 'i' :
+                interval = atoll(optarg);
                 break;
             case 'h':
                 print_usage();
@@ -235,7 +241,7 @@ int main(int argc, char *argv[]) {
 
             char *post_flag = "-";
 
-            if (label != NULL && url != NULL && current_timestamp - last_post_timestamp > 60 * 1000) {
+            if (label != NULL && url != NULL && current_timestamp - last_post_timestamp > interval) {
                 // prepare to post
                 post_flag = "*";
             }
@@ -256,9 +262,9 @@ int main(int argc, char *argv[]) {
                 if (log_fp != NULL) {
                     // output to log file
                     FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%d,%d,%s",
-                            current_timestamp,
-                            pms_meas.conc_pm2_5_amb, pms_meas.conc_pm10_0_amb,
-                            pms_meas.hcho, pms_meas.temperature, pms_meas.humidity, post_flag);
+                           current_timestamp,
+                           pms_meas.conc_pm2_5_amb, pms_meas.conc_pm10_0_amb,
+                           pms_meas.hcho, pms_meas.temperature, pms_meas.humidity, post_flag);
                 }
             } else if (strcmp(model, "PMS7003") == 0) {
 
@@ -271,10 +277,10 @@ int main(int argc, char *argv[]) {
 
                 if (log_fp != NULL) {
                     FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%s",
-                            current_timestamp,
-                            pms_meas.conc_pm1_0_cf1,
-                            pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
-                            post_flag);
+                           current_timestamp,
+                           pms_meas.conc_pm1_0_cf1,
+                           pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
+                           post_flag);
                 }
 
             } else {
