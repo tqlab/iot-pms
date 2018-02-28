@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 
     opterr = 0;
 
-    while ((opt = getopt_long(argc, argv, "m:d:l::u::hv", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "m:d:l::u::i::hv", long_options, &option_index)) != -1) {
         switch (opt) {
 
             case 'm' :
