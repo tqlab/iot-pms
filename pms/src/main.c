@@ -118,7 +118,7 @@ void print_usage() {
     printf("            [--log <log file>]            Log file.\n");
     printf("            [-l, --label <label>]         Data post label.\n");
     printf("            [-u, --url <url>]             Data post target url.\n");
-    printf("            [-i, --interval <interval>]   Data post interval in mill secs.\n");
+    printf("            [-i, --interval <interval>]   Data post interval in secs.\n");
     printf("            [-h, --help]                  Print this message.\n");
     printf("            [-v, --version]               Print version message.\n");
 }
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
                 url = optarg;
                 break;
             case 'i' :
-                interval = atoll(optarg);
+                interval = atoll(optarg) * 1000;
                 break;
             case 'h':
                 print_usage();
