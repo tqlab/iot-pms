@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
 
             char *post_flag = "-";
 
-            if (label != NULL && url != NULL && current_timestamp - last_post_timestamp > interval) {
+            if (label != NULL && url != NULL && current_timestamp - last_post_timestamp >= interval) {
                 // prepare to post
                 post_flag = "*";
             }
