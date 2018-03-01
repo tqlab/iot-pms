@@ -60,10 +60,15 @@ typedef struct {
 
 
 void pms_init(PMS_PARSE_CTX *state);
+
 bool pms_process(PMS_PARSE_CTX *pms_parse_ctx, uint8_t b);
+
 void pms5003_parse(const uint8_t *buf, PMS_MEAS_T *meas);
+
 void pms7003_parse(const uint8_t *buf, PMS_MEAS_T *meas);
+
 int pms_create_cmd(uint8_t *buf, int size, uint8_t cmd, uint16_t data);
+
 int set_interface_attribs(int fd, int speed);
 
 #endif //PMS_PMS_H
