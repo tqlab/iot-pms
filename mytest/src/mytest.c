@@ -14,13 +14,15 @@ void test_curl();
 void test_long_int();
 void test_time();
 void test_json();
+void test_format();
 
 int main(int argc, char *argv[])
 {
     //test_curl();
     //test_long_int();
     //test_time();
-    test_json();
+    //test_json();
+    test_format();
 }
 
 size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -98,7 +100,7 @@ void test_long_int()
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
 
-    LOG_I("1. %"PRIu64"", sec);
+    LOG_I("1. %" PRIu64 "", sec);
     LOG_I("2. %"PRIu64"", usec);
 
     uint64_t timestamp = sec * 1000 + usec / 1000;
@@ -196,3 +198,4 @@ void test_json() {
 
     json_value_free(json_value);
 }
+
