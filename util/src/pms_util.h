@@ -20,6 +20,7 @@ extern const char PMS_VERSION[];
 extern const char PMS_COMPILE_DATETIME[];
 
 #define llu_cast(x) ((unsigned long long)(x))
+#define lld_cast(x) ((long long)(x))
 
 
 /* LOG */

@@ -1,7 +1,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#define llu(x) ((unsigned long long)(x))
+#define llu_cast(x) ((unsigned long long)(x))
+#define lli_cast(x) ((long long)(x))
 
 #define MYLOG(format, ...)                                                          \
     do {                                                                            \
@@ -14,7 +15,8 @@ void test_format() {
 
     uint64_t timestamp = 1519895847566;
 
-    MYLOG("%lu", timestamp);
+    MYLOG("%llu", timestamp);
+    printf("%lli\n", lli_cast(timestamp));
 
 
     //printf("vvvvv %" PRIu64 " aaaa\n", timestamp);
