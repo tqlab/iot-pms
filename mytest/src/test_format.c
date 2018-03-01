@@ -1,6 +1,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#define llu(x) ((unsigned long long)(x))
+
 #define MYLOG(format, ...)                                                          \
     do {                                                                            \
         fprintf(stdout, "[DEBUG] <%s:%d> - " format "\n",                           \
@@ -12,13 +14,11 @@ void test_format() {
 
     uint64_t timestamp = 1519895847566;
 
-    MYLOG("%"PRIu64, timestamp);
+    MYLOG("%lu", timestamp);
+
 
     //printf("vvvvv %" PRIu64 " aaaa\n", timestamp);
 
-    MYLOG("%s", PRIu64);
-
-
-
+    MYLOG("%s", PRIuMAX);
 
 }

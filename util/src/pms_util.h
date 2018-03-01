@@ -11,7 +11,7 @@
 
 uint64_t pms_current_time_millis();
 
-int pms_current_local_time_str(char* timestr, size_t size);
+int pms_current_local_time_str(char *timestr, size_t size);
 
 uint16_t read_uint16(const uint8_t *buf, int idx);
 
@@ -19,14 +19,10 @@ extern const char PMS_GIT_SHA1[];
 extern const char PMS_VERSION[];
 extern const char PMS_COMPILE_DATETIME[];
 
+#define llu_cast(x) ((unsigned long long)(x))
+
+
 /* LOG */
-
-extern int use_tty;
-
-#define USE_TTY()                        \
-    do {                                 \
-        use_tty = isatty(STDERR_FILENO); \
-    } while (0)
 
 #ifdef PMS_DEBUG
 #define LOG_D(format, ...)                                                          \

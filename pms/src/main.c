@@ -261,8 +261,8 @@ int main(int argc, char *argv[]) {
 
                 if (log_fp != NULL) {
                     // output to log file
-                    FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%d,%d,%s",
-                           current_timestamp,
+                    FLOG_I(log_fp, "%llu,%d,%d,%d,%d,%d,%s",
+                           llu_cast(current_timestamp),
                            pms_meas.conc_pm2_5_amb, pms_meas.conc_pm10_0_amb,
                            pms_meas.hcho, pms_meas.temperature, pms_meas.humidity, post_flag);
                 }
@@ -276,8 +276,8 @@ int main(int argc, char *argv[]) {
                       post_flag);
 
                 if (log_fp != NULL) {
-                    FLOG_I(log_fp, "%"PRIu64",%d,%d,%d,%s",
-                           current_timestamp,
+                    FLOG_I(log_fp, "%llu,%d,%d,%d,%s",
+                           llu_cast(current_timestamp),
                            pms_meas.conc_pm1_0_cf1,
                            pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
                            post_flag);
