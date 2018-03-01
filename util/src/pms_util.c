@@ -38,8 +38,8 @@ int pms_current_local_time_str(char *timestr, size_t size) {
     gettimeofday(&tv, &tz);
 
     struct tm *p = localtime(&tv.tv_sec);
-    sprintf(timestr, "%4d-%02d-%02d %02d:%02d:%02d.%03d %s",
-            1900 + p->tm_year, 1 + p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec / 1000,
+    sprintf(timestr, "%4d-%02d-%02d %02d:%02d:%02d.%03ld %s",
+            1900 + p->tm_year, 1 + p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, ld_cast(tv.tv_usec / 1000),
             p->tm_zone);
 
     return 1;

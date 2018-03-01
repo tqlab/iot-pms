@@ -19,6 +19,7 @@ extern const char PMS_GIT_SHA1[];
 extern const char PMS_VERSION[];
 extern const char PMS_COMPILE_DATETIME[];
 
+#define ld_cast(x) ((long)(x))
 #define llu_cast(x) ((unsigned long long)(x))
 #define lld_cast(x) ((long long)(x))
 
