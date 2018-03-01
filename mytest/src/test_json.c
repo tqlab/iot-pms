@@ -6,9 +6,9 @@
 #include "json.h"
 
 void test_json() {
-    json_char* json = (json_char*)"{\"dns\":[{\"domain\":\"mobilegw.alipay.com\",\"ttl\":300,\"ips\":[{\"ip\":\"110.76.30.77\",\"port\":443},{\"ip\":\"110.75.138.9\",\"port\":443},{\"ip\":\"110.75.245.22\",\"port\":443}]}],\"ttd\":7,\"code\":1000,\"clientIp\":\"42.120.75.67\"}";
+    json_char *json = (json_char *) "{\"dns\":[{\"domain\":\"mobilegw.alipay.com\",\"ttl\":300,\"ips\":[{\"ip\":\"110.76.30.77\",\"port\":443},{\"ip\":\"110.75.138.9\",\"port\":443},{\"ip\":\"110.75.245.22\",\"port\":443}]}],\"ttd\":7,\"code\":1000,\"clientIp\":\"42.120.75.67\"}";
 
-    json_value* json_value = json_parse(json, strlen(json));
+    json_value *json_value = json_parse(json, strlen(json));
 
 
     LOG_D("%d", json_value->type);
@@ -23,7 +23,7 @@ void test_json() {
 
         if (entry.value->type == json_integer) {
             LOG_D("name= %s, type= %d, value= %lld",
-                    entry.name, entry.value->type, lld_cast(entry.value->u.integer));
+                  entry.name, entry.value->type, lld_cast(entry.value->u.integer));
         }
 
 

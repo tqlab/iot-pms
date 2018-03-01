@@ -3,10 +3,9 @@
 #include <sys/time.h>
 #include "pms_util.h"
 
-void test_long_int()
-{
+void test_long_int() {
     struct timeval tv;
-    gettimeofday(&tv,NULL);
+    gettimeofday(&tv, NULL);
 
     uint64_t sec = tv.tv_sec;
     uint64_t usec = tv.tv_usec;
@@ -30,5 +29,5 @@ void test_long_int()
     uint64_t tt = pms_current_time_millis(&timestamp_2);
     LOG_I("8. %llu", llu_cast(tt));
 
-    LOG_I("9. %.1f", (double)123/10);
+    LOG_I("9. %.1f", (double) 123 / 10);
 }
