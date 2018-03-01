@@ -23,4 +23,18 @@ void test_format() {
 
     MYLOG("%s", PRIuMAX);
 
+    MYLOG("char: %lu", sizeof(char));
+
+    MYLOG("short: %lu", sizeof(short));
+
+    MYLOG("int: %lu", sizeof(int));
+
+    MYLOG("long: %lu", sizeof(long));
+
+    MYLOG("long long: %lu", sizeof(long long));
+
+    MYLOG("long long unsigned: %lu", sizeof(long long unsigned));
+
+    MYLOG("uint64_t: %lu", sizeof(uint64_t));
+
 }
