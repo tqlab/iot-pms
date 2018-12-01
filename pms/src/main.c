@@ -33,14 +33,14 @@ void curl_post_data(const char *label, const char *url, const PMS_MEAS_T pms_mea
                  CURLFORM_COPYCONTENTS, label, CURLFORM_END);
 
     char pm25_str[10];
-    sprintf(pm25_str, "%d", pms_meas.conc_pm2_5_amb);
+    sprintf(pm25_str, "%d", pms_meas.conc_pm2_5_cf1);
     curl_formadd(&post,
                  &last,
                  CURLFORM_COPYNAME, "pm25",
                  CURLFORM_COPYCONTENTS, pm25_str, CURLFORM_END);
 
     char pm10_str[10];
-    sprintf(pm10_str, "%d", pms_meas.conc_pm10_0_amb);
+    sprintf(pm10_str, "%d", pms_meas.conc_pm10_0_cf1);
     curl_formadd(&post,
                  &last,
                  CURLFORM_COPYNAME, "pm10",
