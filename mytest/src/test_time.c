@@ -1,6 +1,5 @@
 #include <inttypes.h>
 #include <time.h>
-#include <sys/time.h>
 #include "pms_util.h"
 
 
@@ -25,7 +24,7 @@ void test_time() {
 
     LOG_D("%s", TEST_STR);
 
-#ifdef PMS_DEBUG
+#ifdef DEBUG
     LOG_E("%s", "test");
 #endif
 

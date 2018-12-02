@@ -30,4 +30,6 @@ void test_long_int() {
     LOG_I("8. %llu", llu_cast(tt));
 
     LOG_I("9. %.1f", (double) 123 / 10);
+
+    LOG_I("10. %lld", 1524651072231);
 }

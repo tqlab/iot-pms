@@ -254,8 +254,8 @@ int main(int argc, char *argv[]) {
 
                 // output to console
                 LOG_I("pm1=%dug/m^3, pm25=%dug/m^3, pm10=%dug/m^3, hcho=%dug/m^3, temperature=%.1fC, humidity=%.1f％, %s",
-                      pms_meas.conc_pm1_0_cf1,
-                      pms_meas.conc_pm2_5_cf1, pms_meas.conc_pm10_0_cf1,
+                      pms_meas.conc_pm1_0_amb,
+                      pms_meas.conc_pm2_5_amb, pms_meas.conc_pm10_0_amb,
                       pms_meas.hcho, (double) pms_meas.temperature / 10, (double) pms_meas.humidity / 10,
                       post_flag);
 
