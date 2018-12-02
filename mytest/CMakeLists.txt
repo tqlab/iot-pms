@@ -7,8 +7,4 @@ AUX_SOURCE_DIRECTORY(src SRC_LIST)
 ADD_EXECUTABLE(mytest ${SRC_LIST} mytest.c)
 TARGET_LINK_LIBRARIES(mytest pmsutil curl)
 
-ADD_EXECUTABLE(mytest2 mytest2.c)
-ADD_EXECUTABLE(mytest3 mytest3.c)
-# TARGET_LINK_LIBRARIES(mytest2 pmsutil curl)
-
 INSTALL (TARGETS mytest DESTINATION bin PERMISSIONS SETUID)
